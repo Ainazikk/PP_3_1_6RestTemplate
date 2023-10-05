@@ -1,69 +1,57 @@
 package ru.kata.spring.boot_security.demo.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.UserDAO;
-import ru.kata.spring.boot_security.demo.entities.User;
+import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
-    private UserDAO userDAO;
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    @Autowired
-    public UserServiceImpl(UserDAO userDAO) {
-        this.userDAO = userDAO;
-    }
-
-    @Transactional(readOnly = true)
-    public User getByUsername(String username) {
-
-        return userDAO.getByUsername(username);
-    }
+    private final UserRepository userRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public List<User> getAllUsers() {
-        return userDAO.getAllUsers();
+        return userRepository.findAll();
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public User getUserByid(long id) {
-        Optional<User> user = userDAO.getUserByid(id);
-        return user.orElse(null);
+    public User getUserById(long id) {
+        Optional<User> userFound = userRepository.findById(id);
+        return userFound.orElse(null);
     }
 
     @Override
-    @Transactional
-    public void save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDAO.save(user);
+    public User getUserByName(String name) {
+        Optional<User> userFound = userRepository.findByName(name);
+        return userFound.orElse(null);
     }
 
     @Override
     @Transactional
-    public void update(User user, long id) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDAO.update(user, id);
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public void deleteUserByid(long id) {
-        userDAO.deleteUserByid(id);
+    public void updateUser(User updateUser) {
+        User foundUser = getUserByName(updateUser.getName());
+        long id = foundUser.getId();
+        updateUser.setId(id);
+        userRepository.save(updateUser);
     }
 
-
+    @Override
+    @Transactional
+    public void deleteUserById(long id) {
+        userRepository.delete(getUserById(id));
+    }
 }

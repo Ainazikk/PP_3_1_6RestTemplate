@@ -1,49 +1,26 @@
 package ru.kata.spring.boot_security.demo.init;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.kata.spring.boot_security.demo.entities.Role;
-import ru.kata.spring.boot_security.demo.entities.User;
-import ru.kata.spring.boot_security.demo.services.RoleService;
+import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.annotation.PostConstruct;
 
 @Component
+@RequiredArgsConstructor
 public class CreateUserDefault {
 
-    private UserService userService;
-    private RoleService roleService;
+    private final UserService userService;
 
-    @Autowired
-    public CreateUserDefault(UserService userService, RoleService roleService) {
-        this.userService = userService;
-        this.roleService = roleService;
-    }
-
-    @Bean
-    public void createDef() {
-
-        Role adminRole = new Role("ROLE_ADMIN");
-        Role userRole = new Role("ROLE_USER");
-
-        roleService.saveRole(adminRole);
-        roleService.saveRole(userRole);
-
-        Set<Role> adminSet = new HashSet<>();
-        adminSet.add(adminRole);
-        adminSet.add(userRole);
-        Set<Role> userSet = new HashSet<>();
-        userSet.add(userRole);
-
-        User user = new User("user", "user", userSet, 35);
-        User admin = new User("admin", "admin", adminSet, 99);
-
-        userService.save(user);
-        userService.save(admin);
-
+    @PostConstruct
+    public void generateUsers() {
+        userService.saveUser(new User("Tony", "aaadd321b"));
+        userService.saveUser(new User("Liz", "ergRE3e"));
+        userService.saveUser(new User("Jon", "WEF3fd"));
+        userService.saveUser(new User("Sonya", "FF#Fdfs"));
+        userService.saveUser(new User("Bob", "dsaf#sg3"));
+        userService.saveUser(new User("Josh", "hsedfgvSd"));
     }
 }
