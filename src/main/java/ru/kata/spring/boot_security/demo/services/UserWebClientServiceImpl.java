@@ -3,10 +3,12 @@ package ru.kata.spring.boot_security.demo.services;
 import io.micrometer.core.annotation.Timed;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.kata.spring.boot_security.demo.model.User;
 
+@Service
 public class UserWebClientServiceImpl implements UserWebClientService{
 
     private User user;
